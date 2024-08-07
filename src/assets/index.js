@@ -7,6 +7,7 @@ import celestialLogo from "../assets/logo-celestial.png";
 import quantumLogo from "../assets/logo-quantum.png";
 import pulseLogo from "../assets/logo-pulse.png";
 import echoLogo from "../assets/logo-echo.png";
+import productImage from "../assets/product-image.png";
 
 export {
   logoIcon,
@@ -18,4 +19,5 @@ export {
   quantumLogo,
   pulseLogo,
   echoLogo,
+  productImage,
 };
