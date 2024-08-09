@@ -13,6 +13,9 @@ import avatar2 from "../assets/avatar-2.png";
 import avatar3 from "../assets/avatar-3.png";
 import avatar4 from "../assets/avatar-4.png";
 import gridLines from "../assets/grid-lines.png";
+import instaSocial from "../assets/instagram-line.svg";
+import xSocial from "../assets/twitter-x-fill.svg";
+import youtubeSocial from "../assets/youtube-fill.svg";
 
 export {
   logoIcon,
@@ -30,4 +33,7 @@ export {
   avatar3,
   avatar4,
   gridLines,
+  instaSocial,
+  xSocial,
+  youtubeSocial,
 };
