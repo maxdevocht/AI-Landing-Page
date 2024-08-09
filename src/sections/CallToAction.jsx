@@ -1,23 +1,98 @@
+"use client";
 import { Button } from "../components/Button";
-import { starsBg } from "../assets";
-import { gridLines } from "../assets";
+import { starsBg, gridLines } from "../assets";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+
+// Hook for tracking mouse position relative to an element
+const useRelativeMousePosition = (to) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const updateMousePosition = (event) => {
+    if (!to.current) return;
+    const { top, left } = to.current.getBoundingClientRect();
+    mouseX.set(event.x - left);
+    mouseY.set(event.y - top);
+  };
+
+  useEffect(() => {
+    window.addEventListener("mousemove", updateMousePosition);
+
+    return () => {
+      window.removeEventListener("mousemove", updateMousePosition);
+    };
+  }, []);
+
+  return [mouseX, mouseY];
+};
 
 const CallToAction = () => {
+  const sectionRef = useRef(null);
+  const borderedDivRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const backgroundPositionY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [-300, 300]
+  );
+
+  useEffect(() => {
+    const image = new Image();
+    image.src = starsBg;
+    image.onload = () => {
+      setBgWidth(image.width);
+    };
+  }, []);
+
+  const [bgWidth, setBgWidth] = useState(1000);
+
+  const [mouseX, mouseY] = useRelativeMousePosition(borderedDivRef);
+
+  const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX}px ${mouseY}px, black, transparent)`;
+
   return (
-    <section className="py-20 md:py-24">
+    <section className="py-20 md:py-24" ref={sectionRef}>
       <div className="container">
-        <div
-          className="border border-white/15 py-24 px-5 rounded-xl overflow-hidden relative"
+        <motion.div
+          ref={borderedDivRef}
+          className="border border-white/15 py-24 px-5 rounded-xl overflow-hidden relative group"
+          animate={{
+            backgroundPositionX: [0, bgWidth],
+          }}
           style={{
+            backgroundPositionY,
             backgroundImage: `url(${starsBg})`,
+          }}
+          transition={{
+            repeat: Infinity,
+            ease: "linear",
+            duration: 120,
           }}
         >
           <div
-            className="absolute inset-0 bg-[rgb(74,32,138)] bg-blend-overlay [mask-image:radial-gradient(50%_50%_at_50%_35%,black,transparent)]"
+            className="absolute inset-0 bg-[rgb(74,32,138)] bg-blend-overlay [mask-image:radial-gradient(50%_50%_at_50%_35%,black,transparent)] group-hover:opacity-0 transition duration-700"
             style={{
               backgroundImage: `url(${gridLines})`,
             }}
           ></div>
+          <motion.div
+            className="absolute inset-0 bg-[rgb(74,32,138)] bg-blend-overlay opacity-0 group-hover:opacity-100 transition duration-700"
+            style={{
+              maskImage: maskImage,
+              backgroundImage: `url(${gridLines})`,
+            }}
+          ></motion.div>
           <div className="relative">
             <h2 className="text-5xl md:text-6xl max-w-sm mx-auto tracking-tighter text-center font-medium">
               AI-driven SEO for everyone.
@@ -29,7 +104,7 @@ const CallToAction = () => {
               <Button>Join waitlist</Button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
